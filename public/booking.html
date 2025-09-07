@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tourism Ticket Booking</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('https://vizagtourism.org.in/images/tourist-places/rishikonda-beach-vizag/rishikonda-beach-vizag-tourism-location-address.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    form {
+      background-color: rgba(255, 255, 255, 0.5);
+      padding: 30px;
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+      max-width: 400px;
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #004d4d;
+      margin-bottom: 10px;
+    }
+
+    input, select, button {
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 16px;
+      border: 1px solid #444;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    button {
+      background-color: #006b62;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #004d4d;
+    }
+
+    #responseMsg {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .success {
+      color: green;
+    }
+
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+
+  <form id="bookingForm">
+    <h2>Book Your Spot</h2>
+    <select name="spot" id="spotSelect" required>
+      <option value="">-- Select Tourist Spot --</option>
+      <option value="Vizag Beach">Vizag Beach</option>
+      <option value="Simhachalam Temple">Simhachalam Temple</option>
+      <option value="Lighthouse">Lighthouse</option>
+      <option value="Dolphin's Nose View Point">Dolphin's Nose View Point</option>
+      <option value="Borra Caves">Borra Caves</option>
+      <option value="Araku Valley">Araku Valley</option>
+      <option value="Kursura Submarine">Kursura Submarine</option>
+    </select>
+
+    <input type="text" name="customer_name" id="customerName" placeholder="Your Name" required />
+    <input type="date" name="booking_date" id="bookingDate" required />
+    <input type="tel" name="contact_number" placeholder="Contact Number" required />
+    <input type="number" name="tickets" placeholder="No. of Tickets" min="1" max="10" required />
+    <input type="email" name="email" id="emailField" placeholder="Enter your email (optional)" />
+
+    <button type="submit">Book Now</button>
+    <p id="responseMsg"></p>
+  </form>
+
+  <script>
+    const spotImages = {
+      "Vizag Beach": "https://vizagtourism.org.in/images/tourist-places/rishikonda-beach-vizag/rishikonda-beach-vizag-tourism-location-address.jpg",
+      "Simhachalam Temple": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUq41XcOlocCg_wQeQBiZovbXhJRcYr1IGPQ&s",
+      "Lighthouse": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTp0JKZBLdvfOtWcLp5c6zn6tFffsjnnbAnOQ&s",
+      "Dolphin's Nose View Point": "https://ootytourism.co.in/images/headers/dolphins-nose-coonoor-entry-fee-timings-holidays-reviews-header.jpg",
+      "Borra Caves": "https://t3.ftcdn.net/jpg/03/74/14/26/360_F_374142654_ctcLrxDQ4cMnNAnaogXJhH0buJIbc8P5.jpg",
+      "Araku Valley": "https://media.istockphoto.com/id/1351966272/photo/araku-valley-visakhapatnam-andhra-pradesh.jpg?s=612x612&w=0&k=20&c=MBflBnf3Jx6is9KlT0-fBRqvEPo28SZA7lJ-n5Zfzi4=",
+      "Kursura Submarine": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvPmC_zkasT65InwDNWO7PMvjzb0pKFb-YNQ&s"
+    };
+
+    const spotSelect = document.getElementById('spotSelect');
+    const background = document.body;
+
+    // Set today's date for min date restriction
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('bookingDate').setAttribute('min', today);
+
+    // Handle spot change → update background
+    spotSelect.addEventListener('change', () => {
+      const selected = spotSelect.value;
+      if (spotImages[selected]) {
+        background.style.backgroundImage = `url('${spotImages[selected]}')`;
+        localStorage.setItem('selectedSpot', selected);
+      }
+    });
+
+    // Auto-fill from localStorage on load
+    window.onload = () => {
+      const storedSpot = localStorage.getItem('selectedSpot');
+      if (storedSpot && spotImages[storedSpot]) {
+        spotSelect.value = storedSpot;
+        background.style.backgroundImage = `url('${spotImages[storedSpot]}')`;
+      }
+
+      const identifier = localStorage.getItem('userIdentifier');
+      if (identifier) {
+        document.getElementById('customerName').value = identifier;
+        if (identifier.includes('@')) {
+          document.getElementById('emailField').value = identifier;
+        }
+      }
+    };
+
+    // Submit booking
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      const msg = document.getElementById('responseMsg');
+
+      try {
+        const res = await fetch('http://localhost:5500/api/book', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          msg.innerText = result.message;
+          msg.className = 'success';
+          form.reset();
+          localStorage.removeItem('selectedSpot');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        } else {
+          msg.innerText = result.error || 'Booking failed.';
+          msg.className = 'error';
+        }
+      } catch (err) {
+        msg.innerText = 'Something went wrong. Try again.';
+        msg.className = 'error';
+        console.error(err);
+      }
+    });
+  </script>
+
+</body>
+</html>

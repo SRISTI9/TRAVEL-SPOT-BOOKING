@@ -1,0 +1,159 @@
+* {
+    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+body {
+    background: #c0cbca;
+    overflow-x: hidden;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.container{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 1000px;
+    height: 600px;
+    background-color: #f5f5f5;
+    box-shadow: 0 30px 50px #dbdbdb;
+}
+
+.container .slide .item {
+    height: 300px;
+    width: 200px;
+    position: absolute;
+    top: 50%;
+    transform: translate(0,-50%);
+    border-radius: 20px;
+    box-shadow: 0 30px 50px #505050;
+    background-position: 50% 50%;
+    background-size: cover;
+    display: inline-block;
+    transition: 0.5s;
+}
+
+.slide .item:nth-child(1),
+.slide .item:nth-child(2){
+    top:0;
+    left: 0;
+    transform: translate(0,0);
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.slide .item:nth-child(3){
+    left: 80%;
+}
+.slide .item:nth-child(4){
+    left: calc(80% + 220px);
+}
+.slide .item:nth-child(5){
+    left: calc(80% + 440px);
+} 
+
+.slide .item:nth-child(n + 6){
+    left: calc(80% + 660px);
+    opacity: 0;
+}
+
+
+.item .content{
+    position: absolute;
+    top: 50%;
+    left: 100px;
+    width: 500px;
+    text-align: left;
+    color: rgb(248, 248, 248);
+    transform: translate(0,-50%);
+    font-family: 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', "Roboto", "Oxygen", "Ubuntu", "Cantarell", 'Open Sans', 'Helvetica Neue', sans-serif;
+    display: none;
+}
+
+.slide .item:nth-child(2) .content {
+    display: block;
+}
+
+.content .name {
+    font-size: 40px;
+    text-transform: uppercase;
+    font-weight: bold;
+    opacity: 10;
+    animation: animate 1s ease-in-out  1 forwards;
+}
+
+.content .description {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    opacity: 180;
+    transition: opacity 0.5s ease;
+    height: 50;
+    overflow: hidden;
+}
+
+.content .description.active {
+    opacity: 1;
+    height: auto;
+}
+
+
+.content button {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #000;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.content button:hover {
+    background-color: rgb(28, 198, 217);
+    color: white;
+}
+
+.movementButton {
+    position: absolute;
+    bottom: -55px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    text-align: center;
+}
+.movementButton button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #000;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.movementButton button:hover{
+    background-color: lightskyblue;
+    color: white;
+    transition: 0.3s;
+}
+
+@keyframes animate {
+    from{
+        opacity: 0;
+        transform: translate(0,100px);
+        filter: blur(33px);
+    }
+    to{
+        opacity: 1;
+        transform: translate(0);
+        filter: blur(0);
+    }
+}

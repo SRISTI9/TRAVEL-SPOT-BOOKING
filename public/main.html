@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MAIN CHANNEL</title>
+  <link rel="stylesheet" href="loginstyles.css">
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <div class="bg-image"></div>
+
+  <header class="header">
+    <nav class="navbar">
+      <a href="#">Home</a>
+      <a href="#">Portfolio</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+      <a href="#">Help</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="item">
+      <div class="text-item">
+        <p id="para1">
+          Welcome to 
+          <span style="font-weight: 700; position: relative; top: 15px;">
+            <h2 style="margin-bottom: 5px;">TRAVEL SPOTLIGHT</h2>
+            <p style="font-style: italic; font-size: 18px; color: #ffffff; margin-top: 0;">
+              Spot the Best, Travel the Rest!
+            </p>
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <div class="login-section">
+      <div class="form-box login">
+        <form id="loginForm">
+          <h2 style="font-size: 30px; margin-bottom: 20px;">LOGIN</h2>
+
+          <div class="input-box">
+            <span class="icon"><i class='bx bxs-id-card'></i></span>
+            <input type="text" name="identifier" id="identifier" placeholder="Email or Username" required>
+            <label><span>Enter</span> Email or Username</label>
+          </div>
+
+          <div class="input-box" style="position: relative;">
+            <input type="password" name="credential" id="passwordInput" placeholder="Password or OTP" required>
+            <label><span>Enter Password / OTP</span></label>
+            <span id="togglePassword" style="position: absolute; right: 10px; top: 12px; cursor: pointer;">👁</span>
+          </div>
+
+          <button type="submit" class="btn">Login</button>
+          <button type="button" class="btn" style="margin-top: 10px; background: #888;" id="sendOtpBtn">Send OTP to Email</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('passwordInput');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+
+    toggle.addEventListener('click', () => {
+      const isHidden = passwordInput.type === 'password';
+      passwordInput.type = isHidden ? 'text' : 'password';
+      toggle.textContent = isHidden ? '🙈' : '👁';
+    });
+
+    // Login submit handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const identifier = e.target.identifier.value.trim();
+      const credential = e.target.credential.value.trim();
+
+      try {
+        const res = await fetch('http://localhost:5500/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier, credential })
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          alert(result.message);
+          window.location.href = 'index.html';
+
+        } else {
+          alert(result.error || 'Login failed');
+        }
+      } catch (err) {
+        alert('Something went wrong. Try again.');
+      }
+    });
+
+    // Send OTP handler
+    sendOtpBtn.addEventListener('click', async () => {
+      const identifier = document.getElementById('identifier').value.trim();
+
+      if (!identifier) {
+        return alert('Please enter your email or username first.');
+      }
+
+      try {
+        const res = await fetch('http://localhost:5500/api/send-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier })
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          alert('OTP sent successfully to your email!');
+        } else {
+          alert(result.error || 'Could not send OTP');
+        }
+      } catch (err) {
+        alert('Something went wrong while sending OTP.');
+      }
+    });
+  </script>
+
+  <script src="//code.tidio.co/bbpc5f2kmks4ahcd0x2shtzmjdc2obrq.js" async></script>
+</body>
+</html>
